@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">RtpAndroid</string>
+    <string name="record_menu_item">New Video</string>
+</resources>
