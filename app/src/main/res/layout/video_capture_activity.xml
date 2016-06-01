@@ -27,5 +27,8 @@
         android:layout_alignParentRight="false"
         android:layout_alignParentLeft="false"
         android:layout_centerHorizontal="true"
-        android:id="@+id/record_button" />
+        android:id="@+id/record_button"
+        android:enabled="true"
+        android:visibility="visible"
+        style="@android:style/Widget.Holo.ActionButton.TextButton" />
 </RelativeLayout>

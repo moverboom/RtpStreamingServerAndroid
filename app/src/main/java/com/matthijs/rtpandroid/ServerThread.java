@@ -2,6 +2,7 @@ package com.matthijs.rtpandroid;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -72,6 +73,7 @@ public class ServerThread extends Thread {
 
     @Override
     public void run() {
+        boolean canGetNextFrame = true;
         try {
             //Initiate RTSPstate
             state = INIT;
@@ -88,7 +90,6 @@ public class ServerThread extends Thread {
 
                 if (request_type == SETUP) {
                     done = true;
-                    buf = new byte[50000];
                     //update RTSP state
                     state = READY;
                     System.out.println("New RTSP state: READY");
@@ -98,6 +99,7 @@ public class ServerThread extends Thread {
 
                     //init the VideoStream object:
                     video = new VideoStream(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Environment.DIRECTORY_MOVIES + "/" + VideoFileName);
+                    //video = new VideoStream(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + Environment.DIRECTORY_DCIM + "/movie.mjpeg");
 
                     //init RTP socket
                     RTPsocket = new DatagramSocket();
@@ -165,10 +167,10 @@ public class ServerThread extends Thread {
 
             try {
                 //get next frame to send from the video, as well as its size
-                int image_length = video.getnextframe(buf);
-                System.out.println("Image length: " +image_length);
+                buf = video.getnextframe();
+                System.out.println("Image length: " +buf.length);
                 //Builds an RTPpacket object containing the frame
-                RTPpacket rtp_packet = new RTPpacket(MJPEG_TYPE, imagenb, imagenb*FRAME_PERIOD, buf, image_length);
+                RTPpacket rtp_packet = new RTPpacket(MJPEG_TYPE, imagenb, imagenb*FRAME_PERIOD, buf, buf.length);
 
                 //get to total length of the full rtp packet to send
                 int packet_length = rtp_packet.getlength();
@@ -187,9 +189,10 @@ public class ServerThread extends Thread {
                 //print the header bitstream
                 rtp_packet.printheader();
 
-            }
-            catch(Exception ex)
-            {
+            } catch (OutOfFramesException oE) {
+                Log.d("RtpStreaming", oE.getMessage());
+                timer.cancel();
+            } catch(Exception ex) {
                 ex.printStackTrace();
             }
         }

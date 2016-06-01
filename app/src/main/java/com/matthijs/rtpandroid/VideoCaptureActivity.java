@@ -67,7 +67,7 @@ public class VideoCaptureActivity extends Activity implements View.OnClickListen
             Log.v(LOGTAG,e.getMessage());
             finish();
         }
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -78,7 +78,7 @@ public class VideoCaptureActivity extends Activity implements View.OnClickListen
         SurfaceView cameraView = (SurfaceView) findViewById(R.id.camera_surface_view);
         holder = cameraView.getHolder();
         holder.addCallback(this);
-        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        //holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         cameraView.setClickable(true);
         cameraView.setOnClickListener(this);
     }
@@ -88,6 +88,7 @@ public class VideoCaptureActivity extends Activity implements View.OnClickListen
             try {
                 bos.flush();
                 bos.close();
+                cleanAndClose();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -97,6 +98,7 @@ public class VideoCaptureActivity extends Activity implements View.OnClickListen
                 fos = new FileOutputStream(mjpegFile, true);
                 bos = new BufferedOutputStream(fos);
                 bRecording = true;
+                btnRecord.setText("Save");
                 Log.v(LOGTAG, "Recording Started");
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -140,7 +142,13 @@ public class VideoCaptureActivity extends Activity implements View.OnClickListen
                 e.printStackTrace();
             }
         }
+        //cleanAndClose();
+    }
+
+    private void cleanAndClose() {
         bPreviewRunning = false;
+        camera.setPreviewCallback(null);
+        holder.removeCallback(this);
         camera.release();
         finish();
     }
@@ -155,12 +163,9 @@ public class VideoCaptureActivity extends Activity implements View.OnClickListen
                     ByteArrayOutputStream jpegByteArrayOutputStream = new ByteArrayOutputStream();
                     YuvImage im = new YuvImage(b, ImageFormat.NV21, p.getPreviewSize().width, p.getPreviewSize().height, null);
                     Rect r = new Rect(0,0,p.getPreviewSize().width,p.getPreviewSize().height);
-                    im.compressToJpeg(r, 75, jpegByteArrayOutputStream);
+                    im.compressToJpeg(r, 50, jpegByteArrayOutputStream);
                     byte[] jpegByteArray = jpegByteArrayOutputStream.toByteArray();
-
-
-                    //get first 5 bytes to length of frame
-                    byte[] boundaryBytes = ByteBuffer.allocate(4).putInt(jpegByteArray.length).array();
+                    byte[] boundaryBytes = (szBoundaryStart + jpegByteArray.length + szBoundaryDeltaTime + szBoundaryEnd).getBytes();
                     bos.write(boundaryBytes);
                     bos.write(jpegByteArray);
                     bos.flush();

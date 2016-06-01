@@ -5,6 +5,7 @@ package com.matthijs.rtpandroid;
  */
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.net.rtp.RtpStream;
@@ -23,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.Socket;
 import java.net.URI;
+import java.nio.ByteBuffer;
 
 import android.net.rtp.*;
 
@@ -31,7 +33,7 @@ import wseemann.media.FFmpegMediaMetadataRetriever;
 public class VideoStream {
     FileInputStream fis; //video file
     int frame_nb; //current frame nb
-    MediaMetadataRetriever dataRetriever;
+    MjpegInputStream mjpegInputStream;
 
 
     //-----------------------------------
@@ -44,7 +46,7 @@ public class VideoStream {
 
         //init variables
 
-        fis = new FileInputStream(new File(video.getPath()));
+        mjpegInputStream = new MjpegInputStream(new FileInputStream(new File(video.getPath())));
         frame_nb = 0;
     }
 
@@ -52,21 +54,16 @@ public class VideoStream {
     // getnextframe
     //returns the next frame as an array of byte and the size of the frame
     //-----------------------------------
-    public int getnextframe(byte[] frame) throws Exception
+    public byte[] getnextframe() throws Exception
     {
-        int length = 0;
-        String length_string;
-        byte[] frame_length = new byte[4];
-
-
-        //read current frame length
-        fis.read(frame_length,0,4);
-
-        //transform frame_length to integer
-        length_string = new String(frame_length);
-        length = Integer.parseInt(length_string);
-        //frame = new byte[length];
-        return(fis.read(frame,0,length));
+        Bitmap frameBitmap = mjpegInputStream.readMjpegFrame();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        if(frameBitmap != null) {
+            frameBitmap.compress(Bitmap.CompressFormat.JPEG, 30, stream);
+        } else {
+            throw new OutOfFramesException("No more frames");
+        }
+        return stream.toByteArray();
     }
 //    public byte[] getnextframe(long frameTime) throws Exception {
 //        Bitmap currentFrame = dataRetriever.getFrameAtTime(frameTime*1000, MediaMetadataRetriever.OPTION_CLOSEST);
