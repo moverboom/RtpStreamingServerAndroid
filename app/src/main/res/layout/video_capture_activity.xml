@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -30,5 +30,8 @@
         android:id="@+id/record_button"
         android:enabled="true"
         android:visibility="visible"
-        style="@android:style/Widget.Holo.ActionButton.TextButton" />
+        style="@android:style/Widget.Holo.ActionButton.TextButton"
+        android:background="#b0b0b0"
+        android:layout_marginBottom="10dp" />
+
 </RelativeLayout>

@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
@@ -79,8 +80,8 @@ public class VideoCaptureActivity extends Activity implements View.OnClickListen
         holder = cameraView.getHolder();
         holder.addCallback(this);
         //holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        cameraView.setClickable(true);
-        cameraView.setOnClickListener(this);
+        //cameraView.setClickable(true);
+        //cameraView.setOnClickListener(this);
     }
     public void onClick(View v) {
         if (bRecording) {
@@ -99,6 +100,7 @@ public class VideoCaptureActivity extends Activity implements View.OnClickListen
                 bos = new BufferedOutputStream(fos);
                 bRecording = true;
                 btnRecord.setText("Save");
+                btnRecord.setBackgroundColor(getResources().getColor(R.color.colorRecord));
                 Log.v(LOGTAG, "Recording Started");
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -142,11 +144,12 @@ public class VideoCaptureActivity extends Activity implements View.OnClickListen
                 e.printStackTrace();
             }
         }
-        //cleanAndClose();
+        cleanAndClose();
     }
 
     private void cleanAndClose() {
         bPreviewRunning = false;
+        this.holder.getSurface().release();
         camera.setPreviewCallback(null);
         holder.removeCallback(this);
         camera.release();
