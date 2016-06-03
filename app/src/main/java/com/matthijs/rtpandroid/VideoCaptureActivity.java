@@ -61,30 +61,29 @@ public class VideoCaptureActivity extends Activity implements View.OnClickListen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String timestamp = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
-        //szFileName = "videocapture-" + timestamp;
-        szFileName = "videocapture";
+        szFileName = "videocapture-" + timestamp;
         try {
             mjpegFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_MOVIES, szFileName + ".mjpeg");
-
             Log.d("StreamingServer", "File path: " + mjpegFile.getAbsolutePath());
         } catch (Exception e) {
             Log.v(LOGTAG,e.getMessage());
             finish();
         }
-        //requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        //Set fullscreen
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         setContentView(R.layout.video_capture_activity);
+
+        //Add button + listener
         btnRecord = (Button) this.findViewById(R.id.record_button);
         btnRecord.setOnClickListener(this);
+
         camcorderProfile = CamcorderProfile.get(CamcorderProfile.QUALITY_720P);
         SurfaceView cameraView = (SurfaceView) findViewById(R.id.camera_surface_view);
         holder = cameraView.getHolder();
         holder.addCallback(this);
-        //holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        //cameraView.setClickable(true);
-        //cameraView.setOnClickListener(this);
     }
 
     /**
