@@ -1,14 +1,15 @@
 package com.matthijs.rtpandroid;
 
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
+/**
+ * Created by Matthijs Overboom on 12-5-16.
+ */
 public class MainActivity extends AppCompatActivity {
     private int VIDEO_CAPTURE_CODE = 1234;
 
@@ -28,14 +29,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.record) {
+            //Create an Intent for the VideoCaptureActivity
             Intent captureVideoIntent = new Intent(getApplicationContext(), VideoCaptureActivity.class);
+            //Start activity and provide the request code (later used in onActivityResult)
             startActivityForResult(captureVideoIntent, VIDEO_CAPTURE_CODE);
             return true;
         }
@@ -45,11 +44,11 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * This is where to filename is returned from VideoCapture Activity
-     * A call to 
+     * Probably a good place to initialize sending the data to the REST API
      *
-     * @param requestCode
-     * @param resultCode
-     * @param data
+     * @param requestCode VIDEO_CAPTURE_CODE in our case. Used to indicated the returning Activity
+     * @param resultCode Indicated the state in which the Activity returned
+     * @param data Contains data supplied by the Activity
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -18,7 +18,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * Created by matthijs on 25-5-16.
+ * ServerThead. Handles streaming video to one client.
+ * For each client, a new ServerThread is created.
+ *
+ * Created by Matthijs Overboom on 25-5-16.
  */
 public class ServerThread extends Thread {
     //RTP variables:
@@ -41,8 +44,6 @@ public class ServerThread extends Thread {
     Timer timer; //timer used to send the images at the video frame rate
     byte[] buf; //buffer used to store the images to send to the client
 
-    //RTSP variables
-    //----------------
     //rtsp states
     final static int INIT = 0;
     final static int READY = 1;
@@ -62,7 +63,6 @@ public class ServerThread extends Thread {
     private int RTSP_ID = 123456; //ID of the RTSP session
     private int RTSPSeqNb = 0; //Sequence number of RTSP messages within the session
     final static String CRLF = "\r\n";
-
     private Context context;
 
     public ServerThread(Socket socket, Context context) {
@@ -73,7 +73,6 @@ public class ServerThread extends Thread {
 
     @Override
     public void run() {
-        boolean canGetNextFrame = true;
         try {
             //Initiate RTSPstate
             state = INIT;
@@ -154,9 +153,9 @@ public class ServerThread extends Thread {
         }
     }
 
-    //------------------------
-    //Handler for timer
-    //------------------------
+    /**
+     * Send a nwe packet, i.e. frame, to the client
+     */
     public void sendPacket() {
 
         //if the current image nb is less than the length of the video
@@ -203,9 +202,11 @@ public class ServerThread extends Thread {
         }
     }
 
-    //------------------------------------
-    //Parse RTSP Request
-    //------------------------------------
+    /**
+     * Parses an incoming RTPS request such as SETUP or PLAY
+     *
+     * @return int request type
+     */
     private int parse_RTSP_request()
     {
         int request_type = -1;
@@ -263,9 +264,9 @@ public class ServerThread extends Thread {
         return(request_type);
     }
 
-    //------------------------------------
-    //Send RTSP Response
-    //------------------------------------
+    /**
+     * Send an RTPS resonse to the client
+     */
     private void send_RTSP_response()
     {
         try{

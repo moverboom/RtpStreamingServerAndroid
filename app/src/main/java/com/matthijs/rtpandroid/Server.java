@@ -19,7 +19,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * Created by matthijs on 12-5-16.
+ * Multithreaded Server
+ * For each incoming TCP request
+ * a new ServerThread is created upon accepting the request
+ *
+ * Created by Matthijs Overboom on 12-5-16.
  */
 public class Server {
     private Socket RTSPsocket; //socket used to send/receive RTSP messages
@@ -43,6 +47,10 @@ public class Server {
         return server;
     }
 
+    /**
+     * Listens for incoming requests to setup and RTSP (via TCP) connection
+     * Once a request is accepted, a new ServerThread is created and the RTSP conenction is passed to it.
+     */
     private void runServer() {
         new Thread() {
             @Override

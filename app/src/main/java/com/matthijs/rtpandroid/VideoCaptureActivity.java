@@ -191,8 +191,8 @@ public class VideoCaptureActivity extends Activity implements View.OnClickListen
      * For each frame a byte[] is given and this byte[] is converted to a .jpeg image
      * This image is then written to the BufferedOutputStream as well as the frame's length
      *
-     * @param b
-     * @param c
+     * @param b byte[] containing frame
+     * @param c Camera
      */
     public void onPreviewFrame(byte[] b, Camera c) {
         if (bRecording) {
