@@ -56,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
             if(resultCode == RESULT_OK) {
                 String fileName = data.getStringExtra("FILE_NAME");
                 Toast.makeText(this, fileName, Toast.LENGTH_LONG).show();
+
+
+                //INSERT SOME JSON SENDING STUFF HERE
             }
         }
     }
