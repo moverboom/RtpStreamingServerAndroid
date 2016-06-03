@@ -1,6 +1,7 @@
 package com.matthijs.rtpandroid;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -34,7 +35,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created by matthijs on 1-6-16.
+ * This class records and saves the camera input to a .mjpeg file
+ *
+ * Created by Matthijs Overboom on 1-6-16.
  */
 public class VideoCaptureActivity extends Activity implements View.OnClickListener,    SurfaceHolder.Callback, Camera.PreviewCallback {
     public static final String LOGTAG = "VIDEOCAPTURE";
@@ -52,15 +55,14 @@ public class VideoCaptureActivity extends Activity implements View.OnClickListen
     BufferedOutputStream bos;
     Button btnRecord;
     Camera.Parameters p;
+    private String szFileName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Date T = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-        String szFileName = "videocapture";
+        String timestamp = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+        szFileName = "videocapture-" + timestamp;
         try {
-            //mjpegFile = File.createTempFile(szFileName, ".mjpeg", Environment.getExternalStorageDirectory());
             mjpegFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_MOVIES, szFileName + ".mjpeg");
 
             Log.d("StreamingServer", "File path: " + mjpegFile.getAbsolutePath());
@@ -83,12 +85,20 @@ public class VideoCaptureActivity extends Activity implements View.OnClickListen
         //cameraView.setClickable(true);
         //cameraView.setOnClickListener(this);
     }
+
+    /**
+     * onClick listener for btnRecord
+     * (Could alternatively be set on surface, i.e. the screen, to support tap-to-record)
+     *
+     * @param v
+     */
     public void onClick(View v) {
         if (bRecording) {
             bRecording = false;
             try {
                 bos.flush();
                 bos.close();
+                setReturnData(true);
                 cleanAndClose();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -144,9 +154,12 @@ public class VideoCaptureActivity extends Activity implements View.OnClickListen
                 e.printStackTrace();
             }
         }
-        cleanAndClose();
     }
 
+    /**
+     * Close or release all resources
+     * and finish the activity
+     */
     private void cleanAndClose() {
         bPreviewRunning = false;
         this.holder.getSurface().release();
@@ -156,19 +169,51 @@ public class VideoCaptureActivity extends Activity implements View.OnClickListen
         finish();
     }
 
+    /**
+     * Set the return data depending on argument value
+     * true -> set FILE_NAME and RESULT_OK
+     * false -> set RESULT_CANCELED
+     *
+     * @param doSet boolean
+     */
+    private void setReturnData(boolean doSet) {
+        Intent returnIntent = new Intent();
+        if(doSet) {
+            returnIntent.putExtra("FILE_NAME", szFileName);
+            setResult(Activity.RESULT_OK, returnIntent);
+        } else {
+            setResult(Activity.RESULT_CANCELED, returnIntent);
+        }
+    }
+
+    /**
+     * Saves content displayed on the screen to the .mjpeg file
+     * For each frame a byte[] is given and this byte[] is converted to a .jpeg image
+     * This image is then written to the BufferedOutputStream as well as the frame's length
+     *
+     * @param b
+     * @param c
+     */
     public void onPreviewFrame(byte[] b, Camera c) {
         if (bRecording) {
             // Assuming ImageFormat.NV21
             if (p.getPreviewFormat() == ImageFormat.NV21) {
                 Log.v(LOGTAG,"Started Writing Frame");
                 try {
-                    //Format frame to jpeg
+                    //ByteArrayOutputStream to compress frame to
                     ByteArrayOutputStream jpegByteArrayOutputStream = new ByteArrayOutputStream();
+                    //Set format and dimensions
                     YuvImage im = new YuvImage(b, ImageFormat.NV21, p.getPreviewSize().width, p.getPreviewSize().height, null);
                     Rect r = new Rect(0,0,p.getPreviewSize().width,p.getPreviewSize().height);
+                    //Compress to jpeg and save result to jpegByteArrayOutputStream
                     im.compressToJpeg(r, 50, jpegByteArrayOutputStream);
+
+                    //Create byte[] for temporarily save jpeg bytes
                     byte[] jpegByteArray = jpegByteArrayOutputStream.toByteArray();
+                    //Set frame length along with some additional parameters
                     byte[] boundaryBytes = (szBoundaryStart + jpegByteArray.length + szBoundaryDeltaTime + szBoundaryEnd).getBytes();
+
+                    //Write data and flush to ensure writing
                     bos.write(boundaryBytes);
                     bos.write(jpegByteArray);
                     bos.flush();

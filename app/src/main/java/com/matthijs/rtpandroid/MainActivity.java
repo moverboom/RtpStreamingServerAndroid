@@ -7,9 +7,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-
+    private int VIDEO_CAPTURE_CODE = 1234;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +36,28 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.record) {
             Intent captureVideoIntent = new Intent(getApplicationContext(), VideoCaptureActivity.class);
-            startActivity(captureVideoIntent);
+            startActivityForResult(captureVideoIntent, VIDEO_CAPTURE_CODE);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * This is where to filename is returned from VideoCapture Activity
+     * A call to 
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == VIDEO_CAPTURE_CODE) {
+            if(resultCode == RESULT_OK) {
+                String fileName = data.getStringExtra("FILE_NAME");
+                Toast.makeText(this, fileName, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }
