@@ -26,10 +26,15 @@ public class RTPpacket {
     // Bitstream of the RTP payload
     public byte[] payload;
 
-    // --------------------------
-    // Constructor of an RTPpacket object from header fields and payload
-    // bitstream
-    // --------------------------
+    /**
+     * Constructor
+     *
+     * @param PType Payload type. 26 in this project, jpeg
+     * @param Framenb current frame
+     * @param Time Time in ms in video file
+     * @param data payload
+     * @param data_length payload length
+     */
     public RTPpacket(int PType, int Framenb, int Time, byte[] data,
                      int data_length) {
         //fill by default header fields:

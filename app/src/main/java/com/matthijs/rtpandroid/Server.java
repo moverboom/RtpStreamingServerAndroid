@@ -29,6 +29,7 @@ public class Server {
     private Socket RTSPsocket; //socket used to send/receive RTSP messages
     private Context context;
     private static Server server;
+    public static int RTPS_PORT = 5568;
 
     private Server(Context context){
         this.context = context;
@@ -56,8 +57,7 @@ public class Server {
             @Override
             public void run() {
                 try {
-                    int RTSPport = 1234;
-                    ServerSocket listenSocket = new ServerSocket(RTSPport);
+                    ServerSocket listenSocket = new ServerSocket(RTPS_PORT);
 
                     while(true) {
                         RTSPsocket = listenSocket.accept();

@@ -61,7 +61,8 @@ public class VideoCaptureActivity extends Activity implements View.OnClickListen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String timestamp = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
-        szFileName = "videocapture-" + timestamp;
+        //szFileName = "videocapture-" + timestamp;
+        szFileName = "videocapture";
         try {
             mjpegFile = new File(Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_MOVIES, szFileName + ".mjpeg");
 
@@ -206,7 +207,7 @@ public class VideoCaptureActivity extends Activity implements View.OnClickListen
                     YuvImage im = new YuvImage(b, ImageFormat.NV21, p.getPreviewSize().width, p.getPreviewSize().height, null);
                     Rect r = new Rect(0,0,p.getPreviewSize().width,p.getPreviewSize().height);
                     //Compress to jpeg and save result to jpegByteArrayOutputStream
-                    im.compressToJpeg(r, 50, jpegByteArrayOutputStream);
+                    im.compressToJpeg(r, 100, jpegByteArrayOutputStream);
 
                     //Create byte[] for temporarily save jpeg bytes
                     byte[] jpegByteArray = jpegByteArrayOutputStream.toByteArray();
