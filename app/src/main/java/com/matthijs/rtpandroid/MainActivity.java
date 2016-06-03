@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == VIDEO_CAPTURE_CODE) {
             if(resultCode == RESULT_OK) {
-                
+
                 String fileName = data.getStringExtra("FILE_NAME");
                 Video capturedVideo = new Video(fileName, getPhoneInetAddress(), Server.RTPS_PORT);
 
