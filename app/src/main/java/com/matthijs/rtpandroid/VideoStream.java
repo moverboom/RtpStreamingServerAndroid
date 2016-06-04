@@ -20,7 +20,7 @@ public class VideoStream {
     public VideoStream(String path) throws Exception{
         Uri video = Uri.parse(path);
         System.out.println("Video Path: " + video.getPath());
-        mjpegInputStream = new MjpegInputStream(new FileInputStream(new File(video.getPath())));
+        mjpegInputStream = new MjpegInputStream(new FileInputStream(new File(video.getPath() + ".mjpeg")));
         frame_nb = 0;
     }
 

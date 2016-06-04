@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Toast.makeText(this, capturedVideo.getIp().getHostAddress() + ":" + capturedVideo.getPort() + " " + fileName, Toast.LENGTH_LONG).show();
 
-                //INSERT SOME JSON SENDING STUFF HERE
+                // Call async task to do REST POST request to our server (discovery server)
                 AsyncMovieUploaderTask asyncMovieUploaderTask = new AsyncMovieUploaderTask();
                 Video[] videos = new Video[] {capturedVideo};
                 asyncMovieUploaderTask.execute(videos);
