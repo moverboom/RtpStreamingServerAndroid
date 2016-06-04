@@ -2,9 +2,8 @@ package com.matthijs.rtpandroid;
 
 import android.content.Intent;
 import android.net.wifi.WifiManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.ViewUtils;
+import android.support.v7.app.AppCompatActivity;
 import android.text.format.Formatter;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -68,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, capturedVideo.getIp().getHostAddress() + ":" + capturedVideo.getPort() + " " + fileName, Toast.LENGTH_LONG).show();
 
                 //INSERT SOME JSON SENDING STUFF HERE
+                AsyncMovieUploaderTask asyncMovieUploaderTask = new AsyncMovieUploaderTask();
+                Video[] videos = new Video[] {capturedVideo};
+                asyncMovieUploaderTask.execute(videos);
             }
         }
     }
