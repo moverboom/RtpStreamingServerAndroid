@@ -18,8 +18,7 @@ public class AsyncMovieUploaderTask extends AsyncTask<Video, Void, Void> {
 
     // Attributes
     private static final String TAG = "AsyncMovieUploaderTask";
-    //private static final String DISCOVERY_SERVER_URL = "http://bramreinold.nl/discoveryserver/movie/list/add/";
-    private static final String DISCOVERY_SERVER_URL = "http://192.168.178.16/discoveryserver/movie/list/add/";
+    private static final String DISCOVERY_SERVER_URL = "http://192.168.178.11/discoveryserver/movie/list/add/";
     private JSONObject jsonMovieObj;
     private Video video;
 
